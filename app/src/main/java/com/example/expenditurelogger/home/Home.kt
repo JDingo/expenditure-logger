@@ -1,16 +1,12 @@
 package com.example.expenditurelogger.home
 
-import AppTopBar
-import android.graphics.drawable.Drawable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
 import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -18,13 +14,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.expenditurelogger.ui.theme.ExpenditureLoggerTheme
 import com.example.expenditurelogger.R
+import com.example.expenditurelogger.shared.AppTopBar
+import com.example.expenditurelogger.ui.theme.ExpenditureLoggerTheme
 
 @Composable
-fun Home() {
+fun Home(
+    onNavigateToCamera: () -> Unit
+) {
     ExpenditureLoggerTheme {
         Scaffold(
             topBar = { AppTopBar() }
@@ -46,7 +44,7 @@ fun Home() {
                             text = "From File Directory"
                         )
                         DataInputTypeSelectionFAB(
-                            onClick = { /*TODO*/ },
+                            onClick = { onNavigateToCamera() },
                             iconId = R.drawable.baseline_photo_camera_24,
                             contentDescription = "Camera",
                             text = "From Camera"
