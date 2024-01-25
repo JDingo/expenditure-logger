@@ -1,4 +1,4 @@
-name: Lint-Build-Test Pipeline
+name: Lint-Test-Build Pipeline
 
 on:
   push:
@@ -24,11 +24,11 @@ jobs:
       - name: Set up Gradle permissions
         run: chmod +x ./gradlew
 
-      - name: Run Lint
+      - name: Lint
         run: ./gradlew lint
         continue-on-error: false
 
-      - name: Run Tests
+      - name: Test
         run: ./gradlew test
 
       - name: Build
