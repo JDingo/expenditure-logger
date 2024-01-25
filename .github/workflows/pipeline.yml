@@ -1,0 +1,35 @@
+name: Lint-Build-Test Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize]
+
+jobs:
+  lint-build-test-pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "21"
+          cache: "gradle"
+
+      - name: Set up Gradle permissions
+        run: chmod +x ./gradlew
+
+      - name: Run Lint
+        run: ./gradlew lint
+        continue-on-error: false
+
+      - name: Run Tests
+        run: ./gradlew test
+
+      - name: Build
+        run: ./gradlew build
