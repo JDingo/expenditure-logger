@@ -42,4 +42,5 @@ fun MainApp() {
         composable("home") {  Home(onNavigateToCamera = { navController.navigate("camera") }) }
         composable("camera") { Camera(onBackNavigationClick = { navController.navigate("home")}) }
     }
+
 }
