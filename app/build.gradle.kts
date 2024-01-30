@@ -84,4 +84,6 @@ dependencies {
     // Permission dependencies
     implementation("com.google.accompanist:accompanist-permissions:0.34.0")
 
+    // ML Kit - Latin OCR
+    implementation("com.google.mlkit:text-recognition:16.0.0")
 }
