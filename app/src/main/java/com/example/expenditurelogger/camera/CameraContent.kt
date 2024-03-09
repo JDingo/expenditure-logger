@@ -44,9 +44,28 @@ fun CameraContent(
 
     if (cameraPermission) {
         if (lastImageBitmap != null) {
+            val targetAspectRatio = 9f / 20f
+
+            val targetWidth = (lastImageBitmap.height * targetAspectRatio).toInt()
+            val targetHeight = lastImageBitmap.height
+
+            // Calculate left and top offsets for centering
+            val left = ((lastImageBitmap.width - targetWidth) / 2).toInt()
+            val top = 0
+
+            val croppedBitmap = Bitmap.createBitmap(
+                lastImageBitmap,
+                left,
+                top,
+                targetWidth,
+                targetHeight
+            )
+
+            Log.d("CAMERA", "CROPPED")
+
             Image(
                 modifier = Modifier.fillMaxSize(),
-                bitmap = lastImageBitmap.asImageBitmap(),
+                bitmap = croppedBitmap.asImageBitmap(),
                 contentDescription = "Last Taken Picture")
         } else {
             CameraPreviewContent(onPhotoCaptured = { imageProxy -> updateLastImageBitmap(imageProxy) })
@@ -76,9 +95,7 @@ private fun CameraPreviewContent(
                     cameraController.takePicture(
                         mainExecutor,
                         object : ImageCapture.OnImageCapturedCallback() {
-
                             override fun onCaptureSuccess(imageProxy: ImageProxy) {
-                                /* TO-DO: Pass picture to image analyzer for OCR */
                                 onPhotoCaptured(imageProxy)
                             }
                         }
@@ -101,10 +118,12 @@ private fun CameraPreviewContent(
                 PreviewView(context).apply {
                     layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
                     setBackgroundColor(Color.BLACK)
-                    scaleType = PreviewView.ScaleType.FILL_START
+                    scaleType = PreviewView.ScaleType.FILL_CENTER
                 }.also { previewView ->
                     previewView.controller = cameraController
-                    cameraController.bindToLifecycle(lifecycleOwner)
+                    cameraController.bindToLifecycle(
+                        lifecycleOwner
+                    )
                 }
             })
     }
