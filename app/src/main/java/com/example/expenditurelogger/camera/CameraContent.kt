@@ -11,6 +11,7 @@ import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageProxy
 import androidx.camera.view.LifecycleCameraController
 import androidx.camera.view.PreviewView
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -25,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -124,6 +126,36 @@ private fun CameraPreviewContent(
                     )
                 }
             })
+
+        Canvas(
+            modifier = Modifier.fillMaxSize(),
+            onDraw = {
+                val screenWidth = size.width
+                val screenHeight = size.height
+                val gridLineWidth = 1.5f * density
+                val gridLineColor = androidx.compose.ui.graphics.Color.White.copy(0.5f)
+
+                for (row in 1 until 3) {
+                    val y = row * screenHeight / 3f
+                    drawLine(
+                        color = gridLineColor,
+                        start = Offset(0f, y),
+                        end = Offset(screenWidth, y),
+                        strokeWidth = gridLineWidth
+                    )
+                }
+
+                for (column in 1 until 3) {
+                    val x = column * screenWidth / 3f
+                    drawLine(
+                        color = gridLineColor,
+                        start = Offset(x, 0f),
+                        end = Offset(x, screenHeight),
+                        strokeWidth = gridLineWidth
+                    )
+                }
+            }
+        )
     }
 }
 
