@@ -34,6 +34,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import com.example.expenditurelogger.ocr.TextOCR
+import com.example.expenditurelogger.ocr.TextParser
 import com.example.expenditurelogger.ui.theme.ExpenditureLoggerTheme
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -50,7 +51,12 @@ fun CameraOCRActivity(onBackNavigationClick: () -> Unit) {
     fun updateLastImageBitmap(imageProxy: ImageProxy?) {
 
         if (imageProxy != null) {
-            TextOCR.analyzeImage(imageProxy) { result -> recognizedText = result; showAlertDialog = true }
+            TextOCR.analyzeImage(imageProxy) { result ->
+                recognizedText = result;
+                TextParser.parseTotal(recognizedText!!)
+                showAlertDialog = true
+            }
+
             lastImageBitmap = imageProxy
                 .toBitmap()
                 .rotateBitmap(imageProxy.imageInfo.rotationDegrees.toFloat())
@@ -60,7 +66,7 @@ fun CameraOCRActivity(onBackNavigationClick: () -> Unit) {
             lastImageBitmap = null
         }
 
-        Log.d("INFO", "updateLastImageBitmap")
+        Log.d("DEV", "updateLastImageBitmap")
     }
 
     val cameraPermissionState =
@@ -102,7 +108,10 @@ fun CameraOCRActivity(onBackNavigationClick: () -> Unit) {
                 if (showAlertDialog) {
                     AlertDialogExample(
                         onDismissRequest = { showAlertDialog = false; recognizedText = null; updateLastImageBitmap(null) },
-                        onConfirmation = { showAlertDialog = false },
+                        onConfirmation = { showAlertDialog = false; Log.d(
+                            "DEV",
+                            "CameraOCRActivity: ${recognizedText!!.text}"
+                        ) },
                         dialogTitle = "Found text",
                         dialogText = recognizedText!!.text!!
                     )
@@ -160,18 +169,20 @@ fun AlertDialogExample(
 @Composable
 fun DrawBoundingBoxes(boundingBoxes: Text, bitmap: Bitmap) {
     val imageSize = Size(bitmap.width.toFloat(), bitmap.height.toFloat())
-    Log.d("IMGSIZE", imageSize.toString())
+    Log.d("DEV", imageSize.toString())
 
     val density = LocalDensity.current.density
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
     val canvasSize = (screenWidth / density)
+
+    var textBlocks = boundingBoxes.textBlocks.sortedBy { it.boundingBox?.top }.toMutableList()
 
     Canvas(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.Transparent)
     ) {
-        for (block in boundingBoxes.textBlocks) {
+        for (block in textBlocks) {
             // Scale the bounding box coordinates to fit the screen
             val scaleX = size.width / imageSize.width
             val scaleY = size.height / imageSize.height
@@ -182,10 +193,6 @@ fun DrawBoundingBoxes(boundingBoxes: Text, bitmap: Bitmap) {
             val blockFrame = block.boundingBox
 
             if (blockFrame != null) {
-                Log.d("BOX",
-                    "TOP: ${blockFrame.top}; LEFT: ${blockFrame.left}; WIDTH: ${blockFrame.width()}; HEIGHT: ${blockFrame.height()}; TEXT: ${block.text}"
-                    )
-
                 var left = 0f
                 if (blockFrame.left.toFloat() < imageSize.width){
                     left = blockFrame.left.toFloat() - pictureCropWidthChange
@@ -211,7 +218,6 @@ fun DrawBoundingBoxes(boundingBoxes: Text, bitmap: Bitmap) {
 
                 for (element in line.elements) {
                     val elementFrame = element.boundingBox
-
                 }
             }
         }

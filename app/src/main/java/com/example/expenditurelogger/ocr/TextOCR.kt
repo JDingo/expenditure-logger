@@ -21,14 +21,13 @@ class TextOCR {
 
                 val result = recognizer.process(image)
                     .addOnSuccessListener { visionText ->
-                        Log.d("INFO", "analyze: Success")
-                        Log.d("INFO", visionText.text)
+                        Log.d("DEV", "analyze: Success")
                         onSuccess(visionText)
-                        Log.d("INFO", "Callback complete")
+                        Log.d("DEV", "Callback complete")
                     }
                     .addOnFailureListener { e ->
-                        Log.d("WARNING", "analyze: Failure")
-                        Log.d("WARNING", e.toString())
+                        Log.d("DEV", "analyze: Failure")
+                        Log.d("DEV", e.toString())
                     }
             }
         }

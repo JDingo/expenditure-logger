@@ -61,8 +61,6 @@ fun CameraContent(
                 targetHeight
             )
 
-            Log.d("CAMERA", "CROPPED")
-
             Image(
                 modifier = Modifier.fillMaxSize(),
                 bitmap = croppedBitmap.asImageBitmap(),
@@ -90,7 +88,7 @@ private fun CameraPreviewContent(
         floatingActionButton = {
             LargeFloatingActionButton(
                 onClick = {
-                    Log.d("INFO", "Take Picture Button Pressed!")
+                    Log.d("DEV", "Take Picture Button Pressed!")
                     val mainExecutor = ContextCompat.getMainExecutor(context)
                     cameraController.takePicture(
                         mainExecutor,
