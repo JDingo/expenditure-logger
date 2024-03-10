@@ -30,8 +30,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import com.example.expenditurelogger.ocr.TextOCR
 import com.example.expenditurelogger.ocr.TextParser
@@ -169,50 +167,51 @@ fun AlertDialogExample(
 @Composable
 fun DrawBoundingBoxes(boundingBoxes: Text, bitmap: Bitmap) {
     val imageSize = Size(bitmap.width.toFloat(), bitmap.height.toFloat())
-    Log.d("DEV", imageSize.toString())
-
-    val density = LocalDensity.current.density
-    val screenWidth = LocalConfiguration.current.screenWidthDp.dp
-    val canvasSize = (screenWidth / density)
-
-    var textBlocks = boundingBoxes.textBlocks.sortedBy { it.boundingBox?.top }.toMutableList()
+    val textBlocks = boundingBoxes.textBlocks.sortedBy { it.boundingBox?.top }.toMutableList()
 
     Canvas(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.Transparent)
     ) {
+        val croppedImageWidth = imageSize.height * (size.width / size.height)
+
+        val scaleX = size.width / croppedImageWidth
+        val scaleY = size.height / imageSize.height
+
+        drawRect(
+            color = Color.Blue,
+            topLeft = Offset(
+                2f,
+                2f
+            ),
+            size = Size(
+                1078f,
+                2260f
+            ),
+            style = Stroke(4f)
+        )
+
+        val widthChangeDelta = (imageSize.width - croppedImageWidth)
+
         for (block in textBlocks) {
-            // Scale the bounding box coordinates to fit the screen
-            val scaleX = size.width / imageSize.width
-            val scaleY = size.height / imageSize.height
+            val boundingBox = block.boundingBox
 
-            val targetAspectRatio = 9/20
-            val pictureCropWidthChange = (imageSize.height * targetAspectRatio).toInt() / 2
-
-            val blockFrame = block.boundingBox
-
-            if (blockFrame != null) {
-                var left = 0f
-                if (blockFrame.left.toFloat() < imageSize.width){
-                    left = blockFrame.left.toFloat() - pictureCropWidthChange
-                } else {
-                    left = blockFrame.left.toFloat() + pictureCropWidthChange
-                }
-
+            if (boundingBox != null) {
                 drawRect(
                     color = Color.Red,
                     topLeft = Offset(
-                        left * scaleX,
-                        blockFrame.top.toFloat() * scaleY
+                        (boundingBox.left - widthChangeDelta / 2) * scaleX,
+                        boundingBox.top * scaleY
                     ),
                     size = Size(
-                        (blockFrame.width().toFloat()) * scaleX,
-                        (blockFrame.bottom.toFloat() - blockFrame.top.toFloat())
+                        boundingBox.width().toFloat() * scaleX,
+                        boundingBox.height().toFloat() * scaleY
                     ),
                     style = Stroke(4f)
                 )
             }
+
             for (line in block.lines) {
                 val lineFrame = line.boundingBox
 
