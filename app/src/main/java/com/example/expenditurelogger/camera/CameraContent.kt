@@ -1,5 +1,6 @@
 package com.example.expenditurelogger.camera
 
+import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.Matrix
@@ -28,6 +29,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
@@ -35,6 +37,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import com.example.expenditurelogger.R
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun CameraContent(
     cameraPermission: Boolean,
@@ -42,31 +45,14 @@ fun CameraContent(
     lastImageBitmap: Bitmap?,
     updateLastImageBitmap: (ImageProxy) -> Unit
 ) {
-
-
     if (cameraPermission) {
         if (lastImageBitmap != null) {
-            val targetAspectRatio = 9f / 20f
-
-            val targetWidth = (lastImageBitmap.height * targetAspectRatio).toInt()
-            val targetHeight = lastImageBitmap.height
-
-            // Calculate left and top offsets for centering
-            val left = ((lastImageBitmap.width - targetWidth) / 2).toInt()
-            val top = 0
-
-            val croppedBitmap = Bitmap.createBitmap(
-                lastImageBitmap,
-                left,
-                top,
-                targetWidth,
-                targetHeight
-            )
-
             Image(
                 modifier = Modifier.fillMaxSize(),
-                bitmap = croppedBitmap.asImageBitmap(),
-                contentDescription = "Last Taken Picture")
+                bitmap = lastImageBitmap.asImageBitmap(),
+                contentDescription = "Last Taken Picture",
+                contentScale = ContentScale.Crop
+            )
         } else {
             CameraPreviewContent(onPhotoCaptured = { imageProxy -> updateLastImageBitmap(imageProxy) })
         }
