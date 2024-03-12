@@ -76,7 +76,7 @@ private fun CameraPreviewContent(
         floatingActionButton = {
             LargeFloatingActionButton(
                 onClick = {
-                    Log.d("DEV", "Take Picture Button Pressed!")
+                    Log.d("DEV", "CameraPreviewContent: Picture taken!")
                     val mainExecutor = ContextCompat.getMainExecutor(context)
                     cameraController.takePicture(
                         mainExecutor,
@@ -102,7 +102,10 @@ private fun CameraPreviewContent(
                 .padding(paddingValues),
             factory = { context ->
                 PreviewView(context).apply {
-                    layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+                    layoutParams = LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT
+                    )
                     setBackgroundColor(Color.BLACK)
                     scaleType = PreviewView.ScaleType.FILL_CENTER
                 }.also { previewView ->
@@ -146,7 +149,15 @@ private fun CameraPreviewContent(
 }
 
 fun Bitmap.rotateBitmap(degrees: Float): Bitmap {
-    return Bitmap.createBitmap(this, 0, 0, width, height, Matrix().apply { postRotate(degrees) }, true)
+    return Bitmap.createBitmap(
+        this,
+        0,
+        0,
+        width,
+        height,
+        Matrix().apply { postRotate(degrees) },
+        true
+    )
 }
 
 @Composable

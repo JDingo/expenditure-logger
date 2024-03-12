@@ -12,18 +12,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Warning
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -33,26 +32,44 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
 import com.example.expenditurelogger.ocr.TextOCR
 import com.example.expenditurelogger.ocr.TextParser
+import com.example.expenditurelogger.shared.Transaction
+import com.example.expenditurelogger.shared.TransactionForm
 import com.example.expenditurelogger.ui.theme.ExpenditureLoggerTheme
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.mlkit.vision.text.Text
 
-@OptIn(ExperimentalPermissionsApi::class)
+@OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun CameraOCRActivity(onBackNavigationClick: () -> Unit) {
+fun CameraActivity(onBackNavigationClick: () -> Unit) {
+    val cameraPermissionState =
+        rememberPermissionState(permission = android.Manifest.permission.CAMERA)
+
     var lastImageBitmap by remember { mutableStateOf<Bitmap?>(null) }
     var recognizedText by remember { mutableStateOf<Text?>(null) }
-    var showAlertDialog by remember { mutableStateOf<Boolean>(false) }
+
+    var parsedTransaction by remember {
+        mutableStateOf<Transaction>(
+            Transaction("", "", 0f)
+        )
+    }
+    var transaction by remember {
+        mutableStateOf<Transaction>(
+            Transaction("", "", 0f)
+        )
+    }
+
+    val sheetState = rememberModalBottomSheetState()
+    val scope = rememberCoroutineScope()
+    var showBottomSheet by remember { mutableStateOf(false) }
 
     fun updateLastImageBitmap(imageProxy: ImageProxy?) {
-
         if (imageProxy != null) {
             TextOCR.analyzeImage(imageProxy) { result ->
                 recognizedText = result;
-                TextParser.parseTotal(recognizedText!!)
-                showAlertDialog = true
+                parsedTransaction = TextParser.parseTotal(recognizedText!!)
+                showBottomSheet = true
             }
 
             lastImageBitmap = imageProxy
@@ -63,12 +80,29 @@ fun CameraOCRActivity(onBackNavigationClick: () -> Unit) {
         } else {
             lastImageBitmap = null
         }
-
-        Log.d("DEV", "updateLastImageBitmap")
     }
 
-    val cameraPermissionState =
-        rememberPermissionState(permission = android.Manifest.permission.CAMERA)
+    fun resetState() {
+        lastImageBitmap = null
+        recognizedText = null
+        parsedTransaction = Transaction("", "", 0f)
+        transaction = Transaction("", "", 0f)
+        showBottomSheet = false
+    }
+
+    fun handleSubmit(filledTransaction: Transaction) {
+        transaction = filledTransaction
+        Log.d(
+            "DEV",
+            "handleSubmit: Sent ${transaction.merchantName} ${transaction.date} ${transaction.transactionAmount}"
+        )
+
+        resetState()
+    }
+
+    fun handleCancel() {
+        resetState()
+    }
 
     ExpenditureLoggerTheme {
         Scaffold()
@@ -100,68 +134,31 @@ fun CameraOCRActivity(onBackNavigationClick: () -> Unit) {
             ) {
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
-                    contentDescription = "Navigate Back")
+                    contentDescription = "Navigate Back"
+                )
             }
-            if ( recognizedText != null ) {
-                if (showAlertDialog) {
-                    AlertDialogExample(
-                        onDismissRequest = { showAlertDialog = false; recognizedText = null; updateLastImageBitmap(null) },
-                        onConfirmation = { showAlertDialog = false; Log.d(
-                            "DEV",
-                            "CameraOCRActivity: ${recognizedText!!.text}"
-                        ) },
-                        dialogTitle = "Found text",
-                        dialogText = recognizedText!!.text!!
+
+            if (recognizedText != null && lastImageBitmap != null) {
+                DrawBoundingBoxes(recognizedText!!, lastImageBitmap!!)
+            }
+
+            if (showBottomSheet) {
+                ModalBottomSheet(
+                    onDismissRequest = {
+                        showBottomSheet = false
+                        resetState()
+                    },
+                    sheetState = sheetState
+                ) {
+                    TransactionForm(
+                        parsedTransaction = parsedTransaction,
+                        onSubmit = { handleSubmit(it) },
+                        onCancel = { handleCancel() }
                     )
-                }
-                if (lastImageBitmap != null) {
-                    DrawBoundingBoxes(recognizedText!!, lastImageBitmap!!)
                 }
             }
         }
     }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun AlertDialogExample(
-    onDismissRequest: () -> Unit,
-    onConfirmation: () -> Unit,
-    dialogTitle: String,
-    dialogText: String,
-) {
-    AlertDialog(
-        icon = {
-            Icon(Icons.Default.Warning, contentDescription = "Debug Info")
-        },
-        title = {
-            Text(text = dialogTitle)
-        },
-        text = {
-            Text(text = dialogText)
-        },
-        onDismissRequest = {
-            onDismissRequest()
-        },
-        confirmButton = {
-            TextButton(
-                onClick = {
-                    onConfirmation()
-                }
-            ) {
-                Text("Confirm")
-            }
-        },
-        dismissButton = {
-            TextButton(
-                onClick = {
-                    onDismissRequest()
-                }
-            ) {
-                Text("Dismiss")
-            }
-        }
-    )
 }
 
 @Composable

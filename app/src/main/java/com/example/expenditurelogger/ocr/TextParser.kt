@@ -1,6 +1,7 @@
 package com.example.expenditurelogger.ocr
 
 import android.util.Log
+import com.example.expenditurelogger.shared.Transaction
 import com.google.mlkit.vision.text.Text
 import com.google.mlkit.vision.text.Text.TextBlock
 import kotlin.math.ceil
@@ -10,7 +11,7 @@ class TextParser {
 
     companion object {
 
-        fun parseTotal(recognizedText: Text): Triple<String?, String?, Float?> {
+        fun parseTotal(recognizedText: Text): Transaction {
             val verticalSortedTextBlocks = recognizedText.textBlocks.sortedBy { it.boundingBox?.top }
 
             val totalBlock = parseTotalByString(verticalSortedTextBlocks)
@@ -21,7 +22,7 @@ class TextParser {
             val date = parseDate(verticalSortedTextBlocks)
 
             Log.d("DEV", "parseTotal: $merchant; $date; $totalAmount")
-            return Triple<String?, String?, Float?>(merchant, date, totalAmount)
+            return Transaction(merchant ?: "", date ?: "", totalAmount ?: 0f)
         }
 
         fun parseMerchant(textBlocks: List<TextBlock>): String? {
@@ -110,12 +111,12 @@ class TextParser {
         private fun searchSameRowTotal(recognizedText: List<TextBlock>, totalTextBlock: TextBlock): Float? {
             val index = recognizedText.indexOf(totalTextBlock)
 
-            val upperTopLimit = totalTextBlock.boundingBox!!.top - totalTextBlock.boundingBox!!.height()/2
-            val lowerTopLimit = totalTextBlock.boundingBox!!.top + totalTextBlock.boundingBox!!.height()/2
+            val upperTopLimit = totalTextBlock.boundingBox!!.top - totalTextBlock.boundingBox!!.height()
+            val lowerTopLimit = totalTextBlock.boundingBox!!.top + totalTextBlock.boundingBox!!.height()
 
             val upperBlock = if
                     (recognizedText[index-1].boundingBox!!.top > upperTopLimit) recognizedText[index-1] else null
-            val lowerBlock = if (recognizedText[index+1].boundingBox!!.top > lowerTopLimit) recognizedText[index-1] else null
+            val lowerBlock = if (recognizedText[index+1].boundingBox!!.top < lowerTopLimit) recognizedText[index+1] else null
 
             val totalRegexString = "\\d*[,.]\\d\\d".toRegex()
 
@@ -125,8 +126,6 @@ class TextParser {
             val lowerText = if (lowerBlock != null)
                 totalRegexString.find(lowerBlock.text)?.value?.replace(",", ".")?.toFloatOrNull()
                 else null
-
-            Log.d("DEV", "searchSameRowTotal: $upperText $lowerText")
 
             return upperText ?: lowerText ?: null
         }
