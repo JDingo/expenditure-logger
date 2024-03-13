@@ -12,7 +12,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.expenditurelogger.camera.Camera
+import com.example.expenditurelogger.camera.CameraActivity
 import com.example.expenditurelogger.home.Home
 import com.example.expenditurelogger.ui.theme.ExpenditureLoggerTheme
 
@@ -40,6 +40,7 @@ fun MainApp() {
 
     NavHost(navController = navController, startDestination = "home") {
         composable("home") {  Home(onNavigateToCamera = { navController.navigate("camera") }) }
-        composable("camera") { Camera(onBackNavigationClick = { navController.navigate("home")}) }
+        composable("camera") { CameraActivity(onBackNavigationClick = { navController.navigate("home")}) }
     }
+
 }

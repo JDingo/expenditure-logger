@@ -23,6 +23,7 @@ import com.example.expenditurelogger.ui.theme.ExpenditureLoggerTheme
 fun Home(
     onNavigateToCamera: () -> Unit
 ) {
+
     ExpenditureLoggerTheme {
         Scaffold(
             topBar = { AppTopBar() }
