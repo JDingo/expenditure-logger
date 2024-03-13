@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.Matrix
-import android.util.Log
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.camera.core.ExperimentalGetImage
@@ -76,7 +75,6 @@ private fun CameraPreviewContent(
         floatingActionButton = {
             LargeFloatingActionButton(
                 onClick = {
-                    Log.d("DEV", "CameraPreviewContent: Picture taken!")
                     val mainExecutor = ContextCompat.getMainExecutor(context)
                     cameraController.takePicture(
                         mainExecutor,

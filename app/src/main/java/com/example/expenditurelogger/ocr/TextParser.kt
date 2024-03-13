@@ -1,6 +1,5 @@
 package com.example.expenditurelogger.ocr
 
-import android.util.Log
 import com.example.expenditurelogger.shared.Transaction
 import com.google.mlkit.vision.text.Text
 import com.google.mlkit.vision.text.Text.TextBlock
@@ -21,7 +20,6 @@ class TextParser {
             val merchant = parseMerchant(verticalSortedTextBlocks)
             val date = parseDate(verticalSortedTextBlocks)
 
-            Log.d("DEV", "parseTotal: $merchant; $date; $totalAmount")
             return Transaction(merchant ?: "", date ?: "", totalAmount ?: 0f)
         }
 
@@ -45,12 +43,11 @@ class TextParser {
                 }
             }
 
-            Log.d("DEV", "parseMerchant: Not found!")
             return null
         }
 
         fun parseDate(textBlocks: List<TextBlock>): String? {
-            var suitableTextBlocks = textBlocks
+            val suitableTextBlocks = textBlocks
                 .filter { Regex("\\d").containsMatchIn(it.text) }
 
             val dateStringTemplates = listOf(
@@ -67,7 +64,6 @@ class TextParser {
                 }
             }
 
-            Log.d("DEV", "parseDate: Not found!")
             return null
         }
 
@@ -75,9 +71,14 @@ class TextParser {
             val totalStringTemplates = listOf("yhteensä", "summa")
 
             for (totalString in totalStringTemplates) {
-                var suitableTextBlocks = textBlocks
+                val suitableTextBlocks = textBlocks
                     .filter { it.text.length in 4..8 }
-                    .filter { calculateSameCharacters(it.text, totalString) > (totalString.length * similarityRate).toInt() }
+                    .filter {
+                        calculateSameCharacters(
+                            it.text,
+                            totalString
+                        ) > (totalString.length * similarityRate).toInt()
+                    }
 
                 if (suitableTextBlocks.isEmpty()) {
                     continue
@@ -127,7 +128,7 @@ class TextParser {
                 totalRegexString.find(lowerBlock.text)?.value?.replace(",", ".")?.toFloatOrNull()
                 else null
 
-            return upperText ?: lowerText ?: null
+            return upperText ?: lowerText
         }
 
         private fun calculateSameCharacters(recognizedString: String, targetString: String): Int {
