@@ -1,6 +1,7 @@
 package com.example.expenditurelogger.ocr
 
 import com.example.expenditurelogger.shared.Transaction
+import com.example.expenditurelogger.utils.FileHandler
 import com.google.mlkit.vision.text.Text
 import com.google.mlkit.vision.text.Text.TextBlock
 import kotlin.math.ceil
@@ -23,13 +24,8 @@ class TextParser {
             return Transaction(merchant ?: "", date ?: "", totalAmount ?: 0f)
         }
 
-        fun parseMerchant(textBlocks: List<TextBlock>): String? {
-            val merchantStringTemplates = listOf(
-                "makia",
-                "s-market.*",
-                "k-(city|super|)market.*",
-                "alko"
-            )
+        private fun parseMerchant(textBlocks: List<TextBlock>): String? {
+            val merchantStringTemplates = FileHandler.getListOfMerchants()
 
             for (textBlock in textBlocks) {
                 for (merchantString in merchantStringTemplates) {
@@ -46,7 +42,7 @@ class TextParser {
             return null
         }
 
-        fun parseDate(textBlocks: List<TextBlock>): String? {
+        private fun parseDate(textBlocks: List<TextBlock>): String? {
             val suitableTextBlocks = textBlocks
                 .filter { Regex("\\d").containsMatchIn(it.text) }
 
