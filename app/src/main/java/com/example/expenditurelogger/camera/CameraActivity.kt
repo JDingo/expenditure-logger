@@ -176,19 +176,6 @@ fun DrawBoundingBoxes(boundingBoxes: Text, bitmap: Bitmap) {
         val scaleX = size.width / croppedImageWidth
         val scaleY = size.height / imageSize.height
 
-        drawRect(
-            color = Color.Blue,
-            topLeft = Offset(
-                2f,
-                2f
-            ),
-            size = Size(
-                1078f,
-                2260f
-            ),
-            style = Stroke(4f)
-        )
-
         val widthChangeDelta = (imageSize.width - croppedImageWidth)
 
         for (block in textBlocks) {
