@@ -15,6 +15,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.expenditurelogger.camera.CameraActivity
 import com.example.expenditurelogger.home.Home
+import com.example.expenditurelogger.inputForm.InputForm
 import com.example.expenditurelogger.ocr.TextParser
 import com.example.expenditurelogger.settings.ListOfMerchantsEdit
 import com.example.expenditurelogger.settings.SettingsActivity
@@ -60,7 +61,8 @@ fun MainApp(
         composable("home") {
             Home(
                 onNavigateToCamera = { navController.navigate("camera") },
-                onNavigateToSettings = { navController.navigate("settings") }
+                onNavigateToSettings = { navController.navigate("settings") },
+                onNavigateToInputForm = { navController.navigate("inputForm") }
             )
         }
 
@@ -90,6 +92,12 @@ fun MainApp(
             CameraActivity(
                 onBackNavigationClick = { navController.popBackStack() },
                 textParser
+            )
+        }
+
+        composable("inputForm") {
+            InputForm(
+                onBackNavigationClick = { navController.popBackStack() }
             )
         }
     }
