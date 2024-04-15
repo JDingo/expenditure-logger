@@ -25,7 +25,8 @@ import com.example.expenditurelogger.ui.theme.ExpenditureLoggerTheme
 @Composable
 fun Home(
     onNavigateToCamera: () -> Unit,
-    onNavigateToSettings: () -> Unit
+    onNavigateToSettings: () -> Unit,
+    onNavigateToInputForm: () -> Unit
 ) {
 
     ExpenditureLoggerTheme {
@@ -63,7 +64,7 @@ fun Home(
                             text = "From File Directory"
                         )
                         DataInputTypeSelectionFAB(
-                            onClick = { /*TODO*/ },
+                            onClick = { onNavigateToInputForm() },
                             iconId = R.drawable.baseline_edit_square_24,
                             contentDescription = "Manual Input",
                             text = "From Manual Input"
@@ -78,7 +79,7 @@ fun Home(
 @Composable
 @Preview
 fun HomePreview() {
-    Home(onNavigateToCamera = {}, onNavigateToSettings = {})
+    Home(onNavigateToCamera = {}, onNavigateToSettings = {}, onNavigateToInputForm = {})
 }
 
 @Composable
