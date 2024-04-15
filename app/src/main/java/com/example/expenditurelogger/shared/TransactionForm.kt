@@ -27,9 +27,9 @@ fun TransactionForm(
     onSubmit: (Transaction) -> Unit,
     onCancel: () -> Unit
 ) {
-    var merchantName by remember { mutableStateOf(parsedTransaction.merchantName ?: "") }
+    var merchantName by remember { mutableStateOf(parsedTransaction.merchant ?: "") }
     var date by remember { mutableStateOf(parsedTransaction.date ?: "") }
-    var transactionAmountString by remember { mutableStateOf(parsedTransaction.transactionAmount.toString() ?: "") }
+    var transactionAmountString by remember { mutableStateOf(parsedTransaction.total.toString() ?: "") }
 
     Column(
         Modifier

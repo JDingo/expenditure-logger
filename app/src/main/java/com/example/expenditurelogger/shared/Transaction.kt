@@ -1,7 +1,8 @@
 package com.example.expenditurelogger.shared
 
 data class Transaction(
-    var merchantName: String = "",
+    var merchant: String = "",
     var date: String = "",
-    var transactionAmount: Float = 0f
+    var total: Float = 0f,
+    var category_id: Int = 1
 )
