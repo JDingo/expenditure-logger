@@ -86,4 +86,11 @@ dependencies {
 
     // ML Kit - Latin OCR
     implementation("com.google.mlkit:text-recognition:16.0.0")
+
+    // Connectivity Cronet Library
+    implementation("com.google.android.gms:play-services-cronet:18.0.1")
+
+    //JSON library
+    implementation("com.google.code.gson:gson:2.10.1")
+
 }

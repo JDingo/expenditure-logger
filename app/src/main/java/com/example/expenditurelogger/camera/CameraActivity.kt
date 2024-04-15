@@ -1,7 +1,6 @@
 package com.example.expenditurelogger.camera
 
 import android.graphics.Bitmap
-import android.util.Log
 import androidx.camera.core.ImageProxy
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -35,6 +34,7 @@ import com.example.expenditurelogger.ocr.TextParser
 import com.example.expenditurelogger.shared.Transaction
 import com.example.expenditurelogger.shared.TransactionForm
 import com.example.expenditurelogger.ui.theme.ExpenditureLoggerTheme
+import com.example.expenditurelogger.utils.NetworkWorker
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
@@ -42,7 +42,10 @@ import com.google.mlkit.vision.text.Text
 
 @OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun CameraActivity(onBackNavigationClick: () -> Unit) {
+fun CameraActivity(
+    onBackNavigationClick: () -> Unit,
+    textParser: TextParser
+) {
     val cameraPermissionState =
         rememberPermissionState(permission = android.Manifest.permission.CAMERA)
 
@@ -68,7 +71,7 @@ fun CameraActivity(onBackNavigationClick: () -> Unit) {
         if (imageProxy != null) {
             TextOCR.analyzeImage(imageProxy) { result ->
                 recognizedText = result;
-                parsedTransaction = TextParser.parseTotal(recognizedText!!)
+                parsedTransaction = textParser.parseTotal(recognizedText!!)
                 showBottomSheet = true
             }
 
@@ -92,10 +95,8 @@ fun CameraActivity(onBackNavigationClick: () -> Unit) {
 
     fun handleSubmit(filledTransaction: Transaction) {
         transaction = filledTransaction
-        Log.d(
-            "DEV",
-            "handleSubmit: Sent ${transaction.merchantName} ${transaction.date} ${transaction.transactionAmount}"
-        )
+
+        NetworkWorker.postTranscation(transaction)
 
         resetState()
     }
