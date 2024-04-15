@@ -15,10 +15,13 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.expenditurelogger.camera.CameraActivity
 import com.example.expenditurelogger.home.Home
+import com.example.expenditurelogger.ocr.TextParser
 import com.example.expenditurelogger.settings.ListOfMerchantsEdit
 import com.example.expenditurelogger.settings.SettingsActivity
+import com.example.expenditurelogger.settings.UrlEdit
 import com.example.expenditurelogger.ui.theme.ExpenditureLoggerTheme
-import com.example.expenditurelogger.utils.FileHandler
+import com.example.expenditurelogger.utils.FileWorker
+import com.example.expenditurelogger.utils.NetworkWorker
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,8 +48,13 @@ fun MainApp(
     val navController = rememberNavController()
 
     if (!preview) {
-        FileHandler.init(LocalContext.current)
+        NetworkWorker.init(LocalContext.current)
     }
+
+    val urlFileWorker = FileWorker(LocalContext.current, "BACKEND_URL.txt")
+    val merchantFileWorker = FileWorker(LocalContext.current, "listOfMerchants.txt")
+
+    val textParser = TextParser(merchantFileWorker)
 
     NavHost(navController = navController, startDestination = "home") {
         composable("home") {
@@ -59,20 +67,29 @@ fun MainApp(
         composable("settings") {
             SettingsActivity(
                 onBackNavigationClick = { navController.popBackStack() },
-                onDataSendNavigation = { /* TODO */ },
-                onMerchantEditNavigation = { navController.navigate("merchantListEdit") }
+                onDataSendNavigation = { navController.navigate("urlEdit") },
+                onMerchantEditNavigation = { navController.navigate("merchantListEdit") },
             )
         }
 
         composable("merchantListEdit") {
             ListOfMerchantsEdit(
-                onBackNavigationClick = { navController.popBackStack() }
+                onBackNavigationClick = { navController.popBackStack() },
+                merchantFileWorker = merchantFileWorker
+            )
+        }
+
+        composable("urlEdit") {
+            UrlEdit(
+                onBackNavigationClick = { navController.popBackStack() },
+                urlFileWorker = urlFileWorker
             )
         }
 
         composable("camera") {
             CameraActivity(
-                onBackNavigationClick = { navController.popBackStack() }
+                onBackNavigationClick = { navController.popBackStack() },
+                textParser
             )
         }
     }
