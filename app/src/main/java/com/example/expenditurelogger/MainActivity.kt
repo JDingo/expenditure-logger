@@ -50,6 +50,11 @@ fun MainApp(
 
     val textParser = TextParser(merchantFileWorker)
 
+    val urlFileWorker = FileWorker(LocalContext.current, "BACKEND_URL.txt")
+    val merchantFileWorker = FileWorker(LocalContext.current, "listOfMerchants.txt")
+
+    val textParser = TextParser(merchantFileWorker)
+
     NavHost(navController = navController, startDestination = "home") {
         composable("home") {
             Home(
