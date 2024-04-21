@@ -58,12 +58,6 @@ fun Home(
                             text = "From Camera"
                         )
                         DataInputTypeSelectionFAB(
-                            onClick = { /*TODO*/ },
-                            iconId = R.drawable.baseline_folder_open_24,
-                            contentDescription = "File Directory",
-                            text = "From File Directory"
-                        )
-                        DataInputTypeSelectionFAB(
                             onClick = { onNavigateToInputForm() },
                             iconId = R.drawable.baseline_edit_square_24,
                             contentDescription = "Manual Input",
