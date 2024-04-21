@@ -9,7 +9,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -22,7 +22,6 @@ import com.example.expenditurelogger.settings.SettingsActivity
 import com.example.expenditurelogger.settings.UrlEdit
 import com.example.expenditurelogger.ui.theme.ExpenditureLoggerTheme
 import com.example.expenditurelogger.utils.FileWorker
-import com.example.expenditurelogger.utils.NetworkWorker
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,7 +34,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    MainApp(false)
+                    MainApp()
                 }
             }
         }
@@ -44,14 +43,8 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MainApp(
-    preview: Boolean
+    navController: NavHostController = rememberNavController()
 ) {
-    val navController = rememberNavController()
-
-    if (!preview) {
-        NetworkWorker.init(LocalContext.current)
-    }
-
     val urlFileWorker = FileWorker(LocalContext.current, "BACKEND_URL.txt")
     val merchantFileWorker = FileWorker(LocalContext.current, "listOfMerchants.txt")
 
@@ -102,10 +95,4 @@ fun MainApp(
         }
     }
 
-}
-
-@Composable
-@Preview
-fun MainAppPreview() {
-    MainApp(true)
 }
