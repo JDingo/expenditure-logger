@@ -47,7 +47,7 @@ fun InputForm(
         },
         topBar = {
             TopBar(
-                title = "List of Merchants",
+                title = "Manual Transaction Input",
                 onBackNavigationClick = onBackNavigationClick,
             )
         }

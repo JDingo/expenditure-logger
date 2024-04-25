@@ -1,9 +1,11 @@
 package com.example.expenditurelogger.ocr
 
+import android.util.Log
 import com.example.expenditurelogger.shared.Transaction
 import com.example.expenditurelogger.utils.FileWorker
 import com.google.mlkit.vision.text.Text
 import com.google.mlkit.vision.text.Text.TextBlock
+import java.text.SimpleDateFormat
 import kotlin.math.ceil
 import kotlin.math.min
 
@@ -55,7 +57,9 @@ class TextParser(merchantFileWorker: FileWorker) {
                 val match = dateString.find(textBlock.text)
 
                 if (match != null) {
-                    return match.value
+                    val dateobject = SimpleDateFormat("dd.MM.yyyy").parse(match.value)
+                    Log.d("DATE", "parseDate: ${dateobject}")
+                    return SimpleDateFormat("yyyy-MM-dd").format(dateobject)
                 }
             }
         }

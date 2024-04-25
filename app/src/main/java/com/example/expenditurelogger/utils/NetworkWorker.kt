@@ -1,6 +1,7 @@
 package com.example.expenditurelogger.utils
 
 import android.content.Context
+import android.util.Log
 import com.example.expenditurelogger.shared.Transaction
 import com.google.gson.Gson
 import org.chromium.net.CronetEngine
@@ -90,7 +91,10 @@ object NetworkWorker {
         )
         val request: UrlRequest? = requestBuilder?.build()
 
+        Log.d("HTTP POST", "postTranscation: ${requestData}: ${backendURL} ${request.toString()}")
+
         request?.start()
+        Log.d("HTTP POST", "Finished")
     }
 
 }
