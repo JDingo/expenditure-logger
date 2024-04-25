@@ -22,6 +22,7 @@ import com.example.expenditurelogger.settings.SettingsActivity
 import com.example.expenditurelogger.settings.UrlEdit
 import com.example.expenditurelogger.ui.theme.ExpenditureLoggerTheme
 import com.example.expenditurelogger.utils.FileWorker
+import com.example.expenditurelogger.utils.NetworkWorker
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,6 +50,7 @@ fun MainApp(
     val merchantFileWorker = FileWorker(LocalContext.current, "listOfMerchants.txt")
 
     val textParser = TextParser(merchantFileWorker)
+    NetworkWorker.init(LocalContext.current)
 
     NavHost(navController = navController, startDestination = "home") {
         composable("home") {
