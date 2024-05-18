@@ -19,7 +19,7 @@ object NetworkWorker {
     private var cronetEngine: CronetEngine? = null
     private var requestBuilder: UrlRequest.Builder? = null
 
-    private var backendURL: String = "https://expenditure-application.fly.dev"
+    private var backendURL: String
 
     private val executor: Executor = Executors.newSingleThreadExecutor()
 

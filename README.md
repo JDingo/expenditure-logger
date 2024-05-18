@@ -27,14 +27,34 @@ Log expenditure with transactions by filling transaction information manually or
     
 </p>
 
-### Manual input (_Not yet implemented_)
+### Manual input
 
 - Fill a form of transaction event manually
 
-### Customizable list of merchant names (_Not yet implemented_)
+<p align="center">
+  <img src="./img/manual_form.png"
+      alt="App home screen"
+      height="600">
+</p>
+
+### Customizable list of merchant names
 
 - Create own list of merchant names to parse
+
+  - These will be searched from the detected text
+
+  <p align="center">
+  <img src="./img/list_of_merchants.png"
+      alt="App home screen"
+      height="600">
+  </p>
 
 ### Data send (_Not yet implemented_)
 
 - Send data to desired API endpoint
+
+<p align="center">
+<img src="./img/backend.png"
+    alt="App home screen"
+    height="600">
+</p>
